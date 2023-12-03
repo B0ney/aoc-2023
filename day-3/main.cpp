@@ -41,7 +41,7 @@ void scan(std::vector<Digit>& digits, const std::string& input, int y) {
     }
 }
 
-bool has_symbol(const std::vector<std::string>& data, int digits, int x, int y) {
+bool has_symbol(const std::vector<std::string>& data, int x, int y) {
     if (y >= data.size()) {
         return false;
     }
@@ -61,17 +61,17 @@ bool check_adjaceny(const std::vector<std::string>& data, Digit& digit) {
     std::vector<bool> arg;
 
     for (int l = 0; l < len; l++) {
-        arg.push_back(has_symbol(data, len, x + l, y - 1)); // bottom
-        arg.push_back(has_symbol(data, len, x + l, y + 1)); // top
+        arg.push_back(has_symbol(data, x + l, y - 1)); // bottom
+        arg.push_back(has_symbol(data,  x + l, y + 1)); // top
     }
 
-    arg.push_back(has_symbol(data, len, x - 1  , y - 1)); // top left corner
-    arg.push_back(has_symbol(data, len, x + len, y - 1)); // top right corner
-    arg.push_back(has_symbol(data, len, x - 1  , y + 1)); // bottom left corner
-    arg.push_back(has_symbol(data, len, x + len, y + 1)); // bottom right corner
+    arg.push_back(has_symbol(data, x - 1  , y - 1)); // top left corner
+    arg.push_back(has_symbol(data, x + len, y - 1)); // top right corner
+    arg.push_back(has_symbol(data, x - 1  , y + 1)); // bottom left corner
+    arg.push_back(has_symbol(data, x + len, y + 1)); // bottom right corner
 
-    arg.push_back(has_symbol(data, len, x - 1  , y));// middle left 
-    arg.push_back(has_symbol(data, len, x + len, y));// middle right
+    arg.push_back(has_symbol(data, x - 1  , y));// middle left 
+    arg.push_back(has_symbol(data, x + len, y));// middle right
 
 
     for (auto c: arg) {
