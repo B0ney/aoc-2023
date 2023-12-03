@@ -1,44 +1,95 @@
-fn split(input: &str) -> (u32, u32, u32) {
-    let n: Vec<u32> = input
-        .split_terminator('x')
-        .map(|f| f.parse().unwrap())
-        .collect();
+const REQUIRED: (i32, i32, i32) = (12, 13, 14);
 
-    (n[0], n[1], n[2])
+fn is_possible(x: (i32, i32, i32), other: (i32, i32, i32)) -> bool {
+    if x.0 > other.0 {
+        return false;
+    }
+    if x.1 > other.1 {
+        return false;
+    }
+    if x.2 > other.2 {
+        return false;
+    }
+    true
 }
 
-fn area(l: u32, w: u32, h: u32) -> u32 {
-    (2 * l * w) + (2 * w * h) + (2 * h * l)
+fn part1(input: &str) {
+    let mut id_sum: usize = 0;
+
+    for (id, i) in input.lines().enumerate() {
+        let start_offset = i.find(":").unwrap() + 1;
+        let colors_group = i[start_offset..].trim();
+        let mut possible = true;
+
+        for colors in colors_group.split(";") {
+            let color = get_color(colors);
+
+            if !is_possible(color, REQUIRED) {
+                possible = false;
+                break;
+            }
+        }
+
+        if possible {
+            id_sum += id + 1;
+        }
+    }
+
+    println!("{id_sum}")
 }
 
-fn extra(l: u32, w: u32, h: u32) -> u32 {
-    (l * w).min(w * h).min(l * h)
+fn get_color(input: &str) -> (i32, i32, i32) {
+    let mut r = 0;
+    let mut g = 0;
+    let mut b = 0;
+
+    for color in input.split(',') {
+        let (count, color) = color.trim().split_once(" ").unwrap();
+        let count: i32 = count.parse().unwrap();
+
+        let col = match color {
+            "red" => &mut r,
+            "green" => &mut g,
+            "blue" => &mut b,
+            _ => unreachable!(),
+        };
+
+        *col += count;
+    }
+    (r, g, b)
 }
 
-fn perim(l: u32, w: u32, h: u32) -> u32 {
-    (2 * l + 2 * w).min(2 * w + 2 * h).min(2 * l + 2 * h)
-}
+fn part2(input: &str) {
+    let mut power_set_sum: usize = 0;
 
-fn bow(l: u32, w: u32, h: u32) -> u32 {
-    l * w * h
+    for i in input.lines() {
+        let mut min_color = (0, 0, 0);
+
+        let start_offset = i.find(":").unwrap() + 1;
+        let colors_group = i[start_offset..].trim();
+
+        for colors in colors_group.split(";") {
+            let color = get_color(colors);
+
+            if color.0 > min_color.0 {
+                min_color.0 = color.0
+            }
+            if color.1 > min_color.1 {
+                min_color.1 = color.1
+            }
+            if color.2 > min_color.2 {
+                min_color.2 = color.2
+            }
+        }
+
+        let power = (min_color.0 * min_color.1 * min_color.2) as usize;
+        power_set_sum += power;
+    }
+    println!("{power_set_sum}");
 }
 
 fn main() {
-    let data = include_str!("../input.txt");
-
-    let total: u32 = data
-        .lines()
-        .map(split)
-        .map(|(l, w, h)| area(l, w, h) + extra(l, w, h))
-        .sum();
-
-    println!("{total}");
-
-    let total_ribbon: u32 = data
-        .lines()
-        .map(split)
-        .map(|(l, w, h)| perim(l, w, h) + bow(l, w, h))
-        .sum();
-
-    println!("{total_ribbon}");
+    let input = include_str!("../input.txt");
+    part1(input);
+    part2(input);
 }
