@@ -12,7 +12,6 @@ class Digit {
     int y;
     int val;
     size_t digits;
-    bool adjacent = false;
 };
 
 bool is_digit(char c) { return c >= '0' && c <= '9'; }
@@ -24,20 +23,16 @@ void scan(std::vector<Digit>& digits, const std::string& input, int y) {
     
     for (int x = 0; x <= input.size(); x++) {
         if (is_digit(input[x])) {
-            if (!currently_digit) {
-                currently_digit = true;
+            if (buffer.length() == 0) {
                 start = x;
             }
 
-        } else if (currently_digit) {
-            digits.push_back({start, y, std::stoi(buffer), buffer.length()});
-            currently_digit = false;
-            buffer.clear();
-        }
-
-        if (currently_digit) {
             buffer.push_back(input[x]);
-        }
+
+        } else if (buffer.length() != 0) {
+            digits.push_back({start, y, std::stoi(buffer), buffer.length()});
+            buffer.clear();
+        } 
     }
 }
 
@@ -62,7 +57,7 @@ bool check_adjaceny(const std::vector<std::string>& data, Digit& digit) {
 
     for (int l = 0; l < len; l++) {
         arg.push_back(has_symbol(data, x + l, y - 1)); // bottom
-        arg.push_back(has_symbol(data,  x + l, y + 1)); // top
+        arg.push_back(has_symbol(data, x + l, y + 1)); // top
     }
 
     arg.push_back(has_symbol(data, x - 1  , y - 1)); // top left corner
@@ -70,8 +65,8 @@ bool check_adjaceny(const std::vector<std::string>& data, Digit& digit) {
     arg.push_back(has_symbol(data, x - 1  , y + 1)); // bottom left corner
     arg.push_back(has_symbol(data, x + len, y + 1)); // bottom right corner
 
-    arg.push_back(has_symbol(data, x - 1  , y));// middle left 
-    arg.push_back(has_symbol(data, x + len, y));// middle right
+    arg.push_back(has_symbol(data, x - 1  , y)); // middle left 
+    arg.push_back(has_symbol(data, x + len, y)); // middle right
 
 
     for (auto c: arg) {
